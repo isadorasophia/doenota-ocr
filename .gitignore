@@ -55,3 +55,12 @@ docs/_build/
 
 # PyBuilder
 target/
+
+os
+re
+uuid
+cherrypy
+
+# Generated files from cython
+sFunc.c
+*.so
