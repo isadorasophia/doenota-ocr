@@ -34,7 +34,7 @@ image = sFunc.open(output)
 
 grey = sFunc.greyscale(image)
 blurred = sFunc.blur(grey)
-binary = sFunc.binarize(blurred, 500)
+binary = sFunc.binarize(blurred, 75)
 
 # save it
 sFunc.save(output, binary)

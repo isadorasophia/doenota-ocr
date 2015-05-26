@@ -6,6 +6,8 @@ cimport numpy as np
 import numpy as np
 from numpy import linalg
 
+# in order to build: rm -r ./build; rm sFunc.c sFunc.so; python setup.py build_ext -i
+
 # Opens an image with the specified path
 # Returns a numpy-array
 def open(char *path):
@@ -54,12 +56,12 @@ def binarize(np.ndarray[double, ndim=2] image, int size=15):
 				if (i < 0):
 					i = 0
 				o = np.sqrt(i)
-				k = 0.2
+				k = 0.1
 				t = my * ( 1 + k * ( (o/128) - 1 ) )
 				if image [y][x] >= t:
-					binary[y][x] = 0
-				else:
 					binary[y][x] = 255
+				else:
+					binary[y][x] = 0
 
 			size = oldSize
 			x = x+1
@@ -67,11 +69,3 @@ def binarize(np.ndarray[double, ndim=2] image, int size=15):
 		
 
 	return binary
-
-# image = openImg('image.jpg')
-# grey = greyscale(image)
-# blurred = blur(grey)
-#binary = binarize(blurred, 10)
-
-#finalImg = Image.fromarray(binary, 'RGB')
-#finalImg.save('Output.jpg')
