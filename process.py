@@ -5,6 +5,7 @@ import numpy as np
 
 import sFunc
 import contour.contourFinder
+import skew
 
 import sys
 import ctypes
@@ -23,24 +24,31 @@ except Exception, e:
 # set the path
 image = filename[:index]
 extension = filename[index:]
-output = os.path.join('./', image + '-output' + extension)
 
-# get the cropped image
+# output for both final image and its rotated version
+output = os.path.join('./assets/notas-binarized/', image + 'O' + extension)
+outputR = os.path.join('./assets/notas-binarized/', image + 'OR' + extension)
+
+# now, get the cropped image
 cropped = contour.contourFinder.cropReceipt(filename)
 
 # check if it is a valid cropped image
 if cropped == None:
 	print("Couldn\'t find borders for the image...")
+
+	skew.process(filename, ouput);
 else:
 	# saves it
 	sFunc.save(output, cropped)
 
-	# now open it and applies the threshold
-	image = sFunc.open(output)
+	skew.process(output, output);
 
-	grey = sFunc.greyscale(image)
-	blurred = sFunc.blur(grey)
-	binary = sFunc.binarize(blurred, 30)
+# now open it and applies the threshold
+image = sFunc.open(output)
 
-	# save it
-	sFunc.save(output, binary)
+grey = sFunc.greyscale(image)
+blurred = sFunc.blur(grey)
+binary = sFunc.binarize(blurred, 30)
+
+# save it
+sFunc.save(output, binary)

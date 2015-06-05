@@ -2,9 +2,6 @@
 __pycache__/
 *.py[cod]
 
-# C extensions
-*.so
-
 # Distribution / packaging
 .Python
 env/
@@ -60,6 +57,3 @@ os
 re
 uuid
 cherrypy
-
-# Generated files from cython
-sFunc.c
