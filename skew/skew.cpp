@@ -60,7 +60,7 @@ void hough_transform (Mat& im, Mat& orig, double* skew)
         Point2d p2 = Point2d(rho + im.cols/2, im.rows);
         // line (orig, p1, p2, Scalar(0, 0, 255), 1);
         *skew = 90;
-        cout << "skew angle is 90" << endl;
+        //cout << "skew angle is 90" << endl;
     } else
     {
         //convert normal form back to slope intercept form
@@ -75,7 +75,7 @@ void hough_transform (Mat& im, Mat& orig, double* skew)
         double skewangle;
         skewangle = p1.x - p2.x > 0 ? (atan2(p1.y - p2.y, p1.x - p2.x) * 180./CV_PI) : (atan2(p2.y - p1.y, p2.x - p1.x) * 180./CV_PI);
         *skew = skewangle;
-        cout << "skew angle " << skewangle << endl;
+        //cout << "skew angle " << skewangle << endl;
     }
 }
 
@@ -137,17 +137,24 @@ Mat preprocess2 (Mat& im)
 Mat rot(Mat& im, double thetaRad)
 {
     cv::Mat rotated;
+
     double rskew = thetaRad * CV_PI/180;
     double nw = abs(sin(thetaRad)) * im.rows+abs(cos(thetaRad))*im.cols;
     double nh = abs(cos(thetaRad)) * im.rows+abs(sin(thetaRad))*im.cols;
+
     cv::Mat rot_mat = cv::getRotationMatrix2D(Point2d(nw * .5, nh * .5), thetaRad * 180/CV_PI, 1);
     Mat pos = Mat::zeros(Size(1, 3), CV_64FC1);
-    pos.at<double>(0) = (nw- im.cols) * .5;
-    pos.at<double>(1) = (nh- im.rows) * .5;
+
+    pos.at<double>(0) = (nw - im.cols) * .5;
+    pos.at<double>(1) = (nh - im.rows) * .5;
+
     Mat res = rot_mat * pos;
+    
     rot_mat.at<double>(0, 2) += res.at<double>(0);
     rot_mat.at<double>(1, 2) += res.at<double>(1);
-    cv::warpAffine(im, rotated, rot_mat, Size(nw, nh), cv::INTER_LANCZOS4);
+    
+    cv::warpAffine(im, rotated, rot_mat, Size(nw, nh), cv::INTER_LANCZOS4, cv::BORDER_REPLICATE);
+    
     return rotated;
 }
 

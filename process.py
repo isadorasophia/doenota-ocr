@@ -1,19 +1,16 @@
 #!/usr/bin/python
 import os
-import cv2
+import sys
 import numpy as np
 
 import sFunc
 import contour.contourFinder
 import skew
 
-import sys
-import ctypes
-
-if len(sys.argv) == 2:
+if len(sys.argv) > 1:
   filename = sys.argv[1] # for drawing purposes
 else:
-  print "No input image given! \n"
+  print ('No input image given! \n')
 
 # check if is a valid image format
 try:
@@ -24,31 +21,37 @@ except Exception, e:
 # set the path
 image = filename[:index]
 extension = filename[index:]
+path = './assets/notas-binarized/'
 
-# output for both final image and its rotated version
-output = os.path.join('./assets/notas-binarized/', image + 'O' + extension)
-outputR = os.path.join('./assets/notas-binarized/', image + 'OR' + extension)
+# set output for both final image and its rotated version
+output = os.path.join(path, image + 'O' + extension)
+outputR = os.path.join(path, image + 'OR' + extension)
 
 # now, get the cropped image
 cropped = contour.contourFinder.cropReceipt(filename)
 
-# check if it is a valid cropped image
+# check if cropping was successful 
 if cropped == None:
-	print("Couldn\'t find borders for the image...")
+	print('Couldn\'t find borders for the image...')
 
+	# eliminate rotation of the raw image
 	skew.process(filename, ouput);
 else:
 	# saves it
 	sFunc.save(output, cropped)
 
+	# eliminate rotation
 	skew.process(output, output);
 
-# now open it and applies the threshold
+# now open it and applies the sauvola threshold
 image = sFunc.open(output)
 
 grey = sFunc.greyscale(image)
 blurred = sFunc.blur(grey)
-binary = sFunc.binarize(blurred, 30)
+binary = sFunc.binarize(blurred, 15)
 
 # save it
 sFunc.save(output, binary)
+
+# now, rotate 180 degrees
+skew.rotate180(output, outputR)
