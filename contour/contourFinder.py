@@ -175,9 +175,9 @@ def cropReceipt(filename):
 
   # in case our algorithm was unsuccessful
   if len(sorted_squares) <= 0:
-    with open("squareless.txt", "a") as f:
-      f.write(filename + "\n")
-      return None
+  #  with open("squareless.txt", "a") as f:
+  #    f.write(filename + "\n")
+    return None
 
   # save the resulting image from the original one
   img_with_top_square = original.copy()

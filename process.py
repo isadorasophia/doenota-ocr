@@ -8,19 +8,15 @@ import contour.contourFinder
 import skew
 
 if len(sys.argv) > 1:
-  filename = sys.argv[1] # for drawing purposes
+  inputF = sys.argv[1] # for drawing purposes
 else:
   print ('No input image given! \n')
 
-# check if is a valid image format
-try:
-  index = filename.index('.')
-except Exception, e:
-  print ('File must contain its extension!')
+baseName =  os.path.basename(inputF)
+image = baseName[:baseName.index(".")]
+_, extension = os.path.splitext(inputF)
 
 # set the path
-image = filename[:index]
-extension = filename[index:]
 path = './assets/notas-binarized/'
 
 # set output for both final image and its rotated version
@@ -28,14 +24,14 @@ output = os.path.join(path, image + 'O' + extension)
 outputR = os.path.join(path, image + 'OR' + extension)
 
 # now, get the cropped image
-cropped = contour.contourFinder.cropReceipt(filename)
+cropped = contour.contourFinder.cropReceipt(inputF)
 
 # check if cropping was successful 
 if cropped == None:
-	print('Couldn\'t find borders for the image...')
+	# print('Couldn\'t find borders for the image...')
 
 	# eliminate rotation of the raw image
-	skew.process(filename, ouput);
+	skew.process(inputF, output);
 else:
 	# saves it
 	sFunc.save(output, cropped)
