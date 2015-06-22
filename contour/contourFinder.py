@@ -157,7 +157,7 @@ def cropReceipt(filename):
       else:
         retval, next = cv2.threshold(gray, thrs, 255, cv2.THRESH_BINARY)
 
-      _, contours, hierarchy = cv2.findContours(next, mode = cv2.RETR_LIST, method = cv2.CHAIN_APPROX_SIMPLE)
+      contours, hierarchy = cv2.findContours(next, mode = cv2.RETR_LIST, method = cv2.CHAIN_APPROX_SIMPLE)
 
       # how are the contours sorted? outwards to inwards? would be interesting to do a PVE
       # sort of thing where the contours within a contour (and maybe see an elbow plot of some sort)

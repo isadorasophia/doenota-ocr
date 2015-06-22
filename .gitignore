@@ -57,3 +57,10 @@ os
 re
 uuid
 cherrypy
+
+assets/
+
+# binary
+*.jpg
+*.png
+*.tif

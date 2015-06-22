@@ -1,0 +1,9 @@
+Report temporário acerca dos resultados observados até então.
+	Causas que justificam a não deteccao ou não aproveitamento:
+		> Falta de foco
+		> Notas demasiado dobradas
+		> Notas duplicadas
+		> Print screen do aplicativo
+
+Taxa de processamentos bem sucedidos: 57/68
+	
