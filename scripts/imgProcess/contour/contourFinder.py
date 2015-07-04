@@ -8,7 +8,6 @@
 
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
 import sys
 import math
 import pdb
@@ -23,8 +22,6 @@ height = 0.0
 ### convenience plotting functions
 def ss(thing):
   cv2.imwrite("about/%s.tif" % (ra.random()), thing)
-  plt.subplot(121),plt.imshow(thing,cmap = 'gray')
-  plt.show()
 
 def dd(thing, square):
   extra = thing.copy()

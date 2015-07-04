@@ -1,0 +1,1 @@
+pyodbc // in order to connect python with azure SQL server
