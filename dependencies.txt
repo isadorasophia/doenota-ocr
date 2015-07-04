@@ -1,1 +1,8 @@
-pyodbc // in order to connect python with azure SQL server
+python dependencies:
+	pyodbc // in order to connect python with azure SQL server
+	cv2 // opencv
+	numpy
+
+(* compile) c++ dependencies:
+	opencv
+	boost
