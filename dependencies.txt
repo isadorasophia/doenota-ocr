@@ -6,3 +6,6 @@ python dependencies:
 (* compile) c++ dependencies:
 	opencv
 	boost
+
+must be able to execute:
+	tesseract (v3.01+)

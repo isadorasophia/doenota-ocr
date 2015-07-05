@@ -6,9 +6,9 @@ import skew
 import cropText
 
 class Processor():
-	def __init__(self, rawFolder, processedFolder, data_id, extension):
+	def __init__(self, rawDir, processedDir, data_id, extension):
 		self.rawPath = rawPath
-		self.processedFolder = processedFolder
+		self.processedDir = processedDir
 
 		self.name = data_id
 		self.extension = extension
