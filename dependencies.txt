@@ -9,3 +9,5 @@ python dependencies:
 
 must be able to execute:
 	tesseract (v3.01+)
+	python 2.7
+	g++

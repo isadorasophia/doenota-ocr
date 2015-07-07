@@ -5,6 +5,7 @@ class OCR():
 	def __init__(self, path):
 		self.files = [path + f for f in os.listdir(path)]
 
+		# by default, free to change it
 		self.lang = ['not', 'not2']
 
 	def performOCR(self, path):
