@@ -1,30 +1,42 @@
 import pyodbc
 
-# uncomment stuff when launching at container
+# still to be tested with container
 class DBop:
-	def __init__(self):
-		return
-		
-		# try:
-	 #    	self.connection = pyodbc.connect('TDSVER=8.0 tsql -H XXXXXXXX.database.windows.net -U Username -D DatabaseName -p 1433 -P Password')
-  #   	except IOError:
-  #   		print('Could not connect to server.')
-  #       	sys.exit()
+	def __init__(self):		
+		try:
+			# TODO: set connection string
+	    	self.connection = pyodbc.connect('DSN=<dsn>;UID=<uid>@<host>;PWD=<pwd>')
+    	except IOError:
+    		print('Could not connect to server.')
+        	sys.exit()
 
-	 #    self.cur = connection.cursor()
+	    self.cur = self.connection.cursor()
 
 	def getNextImage(self):
-		return ("01", "img")
-		# cur.execute('SELECT data_id, files FROM images_data WHERE status = \'UNPROCESSED\'')
+		transaction = 'getReceipt'
 
-		# cur[0].status = "PROCESSING"
-		# return (cur[0].data_id, cur[0].files)
+		self.cur.execute('BEGIN TRANSACTION %s' % transaction)
+		target = self.cur.execute('SELECT data_id, files FROM images_data WHERE status == \'UNPROCESSED\'').fetchone()
+
+		self.cur.execute('UPDATE images_data SET status = %s WHERE data_id == %s' % ('PROCESSING', data_id))
+
+		self.cur.execute('COMMIT TRANSACTION %s' % transaction)
+
+		return (target.data_id, target.files)
 
 	def save(self, data_id, CNPJ, date, COO, total):
-		cur.execute('SELECT * FROM images_data WHERE data_id = \'%s\'' % data_id)
+		transaction = 'saveReceipt'
 
-		cur.cnpj = CNPJ
-		cur.emission_date = date
-		cur.coupon_code = COO
-		cur.purchase_value = total
-		cur.status = "PROCESSED"
+		self.cur.execute('BEGIN TRANSACTION %s' % transaction)
+
+		self.cur.execute('UPDATE images_data SET cnpj = %s, emission_date = %s, coupon_code = %s, purchase_value = %s, status = %s WHERE data_id == %s' % (CNPJ, date, COO, total, 'PROCESSED', data_id))
+
+		self.cur.execute('COMMIT TRANSACTION %s' % transaction)
+
+	def check(self):
+		check = self.cur.execute('SELECT * FROM images_data WHERE status == \'UNPROCESSED\'')
+
+		if check == None:
+			return False
+		else
+			return True

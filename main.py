@@ -43,38 +43,43 @@ class ReceiptModel():
 		shutil.rmtree(resultsDir + idDir)
 
 if __name__ == "__main__":
-    database = DBop()
+	valid = True
 
-    # build initial data
-    receipt = ReceiptModel()
-    receipt.data_id, receipt.image = database.getNextImage()
+	while valid:
+	    database = DBop()
 
-    # local directory for data handling
-    idDir = receipt.data_id + '/'
+	    # build initial data
+	    receipt = ReceiptModel()
+	    receipt.data_id, receipt.image = database.getNextImage()
 
-    createWorkspace(idDir)
+	    # local directory for data handling
+	    idDir = receipt.data_id + '/'
 
-	# saves the image
-	# receipt.saveReceipt(idDir)
+	    createWorkspace(idDir)
 
-	# process receipt with the respective algorithms
-	processor = Processor(rawDir + idDir, processedDir + idDir, receipt.data_id, extension)
-	processor.CRSB()
-	processor.CTS()
+		# saves the image
+		# receipt.saveReceipt(idDir)
 
-	# perform ocr on the processed images
-	ocr = OCR(processedDir + idDir)
-	ocr.performOCR(resultsDir + idDir)
+		# process receipt with the respective algorithms
+		processor = Processor(rawDir + idDir, processedDir + idDir, receipt.data_id, extension)
+		processor.CRSB()
+		processor.CTS()
 
-	extractor = DataExtractor(resultsDir + idDir)
+		# perform ocr on the processed images
+		ocr = OCR(processedDir + idDir)
+		ocr.performOCR(resultsDir + idDir)
 
-	# perform data extract
-	receipt.COO = extractor.COO()
-	receipt.CNPJ = extractor.CNPJ()
-	receipt.date = extractor.date()
-	receipt.total = extractor.total()
+		extractor = DataExtractor(resultsDir + idDir)
 
-	database.save(receipt.data_id, receipt.CNPJ, receipt.date, receipt.COO, 
-		receipt.total)
+		# perform data extract
+		receipt.COO = extractor.COO()
+		receipt.CNPJ = extractor.CNPJ()
+		receipt.date = extractor.date()
+		receipt.total = extractor.total()
 
-	receipt.cleanWorkspace(idDir)
+		database.save(receipt.data_id, receipt.CNPJ, receipt.date, receipt.COO, 
+			receipt.total)
+
+		receipt.cleanWorkspace(idDir)
+
+		valid = database.check()
