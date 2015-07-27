@@ -55,7 +55,7 @@ if __name__ == "__main__":
 	    # local directory for data handling
 	    idDir = receipt.data_id + '/'
 
-	    createWorkspace(idDir)
+	    ReceiptModel.createWorkspace(idDir)
 
 		# saves the image
 		# receipt.saveReceipt(idDir)
@@ -80,6 +80,6 @@ if __name__ == "__main__":
 		database.save(receipt.data_id, receipt.CNPJ, receipt.date, receipt.COO, 
 			receipt.total)
 
-		receipt.cleanWorkspace(idDir)
+		ReceiptModel.cleanWorkspace(idDir)
 
 		valid = database.check()

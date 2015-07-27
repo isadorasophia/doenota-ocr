@@ -1,8 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import os
 import re
 
 CURRENT_YEAR = '2015'
-CNPJ_NUM = 5
+CNPJ_SIZE = 5
 
 class DataExtractor():
 	def __init__(self, path):
@@ -19,62 +22,80 @@ class DataExtractor():
 
 		for content in self.contents:
 			try:
-				t = re.search('..[,.$-/]\s*...[,.$-/]\s*.../\s*....[,.$-/]\s*.*', content).group(0)
+				content = re.sub(r'(..)[,.$-/]\s*(...)[,.$-/]\s*(...)[./]\s*(....)[,.$-/]\s*(..)', r'\1.\2.\3.\4.\5', content)
+				t = re.search('..[,.$-/]\s*...[,.$-/]\s*...[./]\s*....[,.$-/]\s*..', content).group(0)
 
-				t = onlyNumbers(t)
+				t = DataExtractor.onlyNumbers(t)
 
 				# separate numbers into groups and alocate them
 				counter = 0
 				for k in re.findall(r'\d+', t):
-					CNPJ[counter][k] += 1 if k in CNPJ.viewvalues() else CNPJ[counter][k] = 1
+					if k in CNPJ[counter].keys():
+						CNPJ[counter][k] += DataExtractor.accuracy(k)
+					else:
+						CNPJ[counter][k] = DataExtractor.accuracy(k)
 
-					counter += 1 if counter + 1 < CNPJ_SIZE else pass
-
-			except IndexError:
+					if counter + 1 < CNPJ_SIZE:
+						counter += 1
+					else:
+						break
+			except AttributeError, IndexError:
 				pass
 
-		return '.'.join(maxValue(CNPJ[i]) for i in range (CNPJ_SIZE))
+		return ''.join(DataExtractor.maxValue(CNPJ[i]) for i in range (CNPJ_SIZE))
 
 	def COO(self):
 		COO = {'' : 0}
 
 		for content in self.contents:
 			try:
-				t = re.search('C00:......|CÓÓ:......|COO:......|00:......|00\.......|cUU:......', content).group(0)
+				t = re.search('C00[:,./]......|CÓÓ:......|COO:......|00:......|00\.......|cUU:......', content).group(0)
 
-				t = onlyNumbers(t[len (t) - 6:])
+				t = DataExtractor.onlyNumbers(t[len (t) - 6:])
 
-				COO[t] += 1 if (t in COO.viewvalues()) else COO[t] = 1
-			except IndexError:
+				if t in COO.keys():
+					COO[t] += DataExtractor.accuracy(t)
+				else:
+					COO[t] = DataExtractor.accuracy(t)
+			except AttributeError, IndexError:
 				pass
 
-		return maxValue(COO)
+		return DataExtractor.maxValue(COO)
 
 	def date(self):
-		days = months = {'' : 0}
+		days = {'' : 0}
+		months = {'' : 0}
 		years = {CURRENT_YEAR : 1}
 		date = ''
 
 		for content in self.contents:
-			content = re.compile(content)
-
 			try:
 				t = re.search('../../....', content).group(0)
 
 				# get positions since is a fixed position by the regular exp
-				day = onlyNumbers(t[0:2])
-				month = onlyNumbers(t[3:5])
-				year = onlyNumbers(t[6:])
+				day = DataExtractor.onlyNumbers(t[0:2])
+				month = DataExtractor.onlyNumbers(t[3:5])
+				year = DataExtractor.onlyNumbers(t[6:])
 
-				days[day] += 1 if (day in days.viewvalues()) else days[day] = 1
-				months[month] += 1 if (month in months.viewvalues()) else months[month] = 1
+				if day in days.keys():
+					days[day] += DataExtractor.accuracy(day)
+				else:
+					days[day] = DataExtractor.accuracy(day)
+
+				if month in months.keys():
+					months[month] += DataExtractor.accuracy(month)
+				else: 
+					months[month] = DataExtractor.accuracy(month)
 
 				# since initial value still have an advantage, it is set to 0
-				years[year] += 1 if (year in years.viewvalues()) else years[year] = 0
-			except IndexError:
+				if year in years.keys():
+					years[year] += 1
+				else:
+					years[year] = 0
+			except AttributeError, IndexError:
 				pass
 
-		date = maxValue(days) + '/' + maxValue(month) + '/' + maxValue (years)
+		date = DataExtractor.maxValue(days) + '/' + DataExtractor.maxValue(months) + '/' + DataExtractor.maxValue(years)
 
 		return date
 
@@ -83,25 +104,30 @@ class DataExtractor():
 
 		for content in self.contents:
 			try:
-				t = re.search('T.*T.*L[^\\n]|TAL R$[^\\n]|TAL RS[^\\n]|$ .*[,.$]\s*..', content).group(0)
+				t = re.search(r'T.T.L ([A-Za-z\d .]+)|TAL R$ ([A-Za-z\d .]+)|T.L RS ([A-Za-z\d .]+)|T.L Rs ([A-Za-z\d .]+)|$ .*[,.$]\s*..', content).group(0)
 
 				# \s* in order to ignore spaces
-				t = onlyNumbers(re.search('.*[,.$]\s*..').group(0))
-				t = ','.join[srt(i) for i in re.findall(r'\d+', t)]
+				t = DataExtractor.onlyNumbers(t)
+				t = re.search(r'\d+[,$/. ]+..', t).group(0)
 
-				total[t] += 1 if (t in total.viewvalues()) else total[t] = 1
-			except IndexError:
+				t = ','.join(re.findall(r'\d+', t))
+ 
+				if t in total.keys(): 
+					total[t] += DataExtractor.accuracy(t)
+				else:
+					total[t] = DataExtractor.accuracy(t)
+			except AttributeError, IndexError:
 				pass
 
-		return maxValue(total)
+		return DataExtractor.maxValue(total)
 
 	# tries to replace at most the possible OCR misassumptions, 
 	# since we are only dealing with numbers
 	@staticmethod
 	def onlyNumbers (s):
-		dic = {'l':'1', 'D':'0', 'O':'0', '/':'', '-':''}
+		dic = {'l':'1', 'D':'0', 'B':'8', 'I':'1', 'O':'0', 'o':'0', '/':'', '-':''}
 
-		s = replaceAll(s, dic)
+		s = DataExtractor.replaceAll(s, dic)
 		return s
 
 	# replace all occurrences of a key with its value
@@ -115,10 +141,20 @@ class DataExtractor():
 	# returns max value in a dict
 	@staticmethod
 	def maxValue (dic):
+		k = list(dic.keys())
 		v = list(dic.values())
-		return max(v)
+
+		return k[v.index(max(v))]
+
+	@staticmethod
+	def accuracy(s):
+		if s.isdigit():
+			return 2
+		else:
+			return 1
 
 if __name__ == "__main__":
-	extractor = DataExtractor('/home/isadora/projects/doenota-ocr/scripts/temp/')
+	# testing script
+	# extractor = DataExtractor('./temp/')
 
-	extractor.date()
+	# print extractor.date()
